@@ -193,17 +193,20 @@ export function SaveButton({
   saved,
   onSave,
   compact = false,
+  disabled = false,
 }: {
   product: Product;
   saved: boolean;
   onSave: () => void;
   compact?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       className={`${compact ? "save-icon" : "button secondary save-button"} ${saved ? "is-saved" : ""}`}
       aria-pressed={saved}
+      disabled={disabled}
       aria-label={`${product.name} ${saved ? "저장 취소" : "옷장에 담기"}`}
       onClick={onSave}
     >

@@ -1,9 +1,10 @@
 """FastAPI application. Run with uvicorn app.main:app --reload."""
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 
 from app.api.ai_recommendations import router as ai_recommendation_router
+from app.api.members import router as members_router
 from app.api.recommendations import router as recommendation_router
 
 app = FastAPI(
@@ -25,6 +26,15 @@ app = FastAPI(
 )
 app.include_router(recommendation_router)
 app.include_router(ai_recommendation_router)
+app.include_router(members_router)
+
+
+@app.middleware("http")
+async def private_responses(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith(("/auth/", "/wardrobe")):
+        response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 class HealthResponse(BaseModel):

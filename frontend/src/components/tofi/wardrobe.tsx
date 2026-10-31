@@ -24,6 +24,31 @@ export function WardrobeScreen() {
   const items = all.filter(
     (item) => filter === "전체" || item.product.category === filter,
   );
+  if (state.accountStatus === "loading")
+    return (
+      <div className="container wardrobe-page">
+        <Heading
+          title="내 옷장"
+          description="로그인과 저장한 상품을 확인하고 있어요."
+        />
+      </div>
+    );
+  if (!state.member)
+    return (
+      <div className="container wardrobe-page">
+        <EmptyState
+          title="나만의 옷장을 만들어보세요"
+          description="Google 로그인 후 마음에 든 상품을 내 계정에 저장할 수 있어요."
+          href="/login?next=%2Fwardrobe"
+          label="Google로 로그인"
+        />
+        {state.accountError ? (
+          <p role="alert" className="inline-error">
+            {state.accountError}
+          </p>
+        ) : null}
+      </div>
+    );
   return (
     <div className="container wardrobe-page">
       <div className="wardrobe-heading">
@@ -38,6 +63,11 @@ export function WardrobeScreen() {
           토피 PICK
         </Button>
       </div>
+      {state.accountError ? (
+        <p role="alert" className="inline-error">
+          {state.accountError}
+        </p>
+      ) : null}
       <div className="wardrobe-toolbar">
         <h2>
           담아둔 상품 <span>{all.length}</span>
@@ -114,6 +144,9 @@ export function WardrobeScreen() {
                 </details>
               </div>
               <SaveButton
+                disabled={
+                  state.wardrobePending || state.accountStatus === "loading"
+                }
                 product={product}
                 saved
                 compact

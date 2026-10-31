@@ -1,7 +1,10 @@
 import { freshProfile } from "./catalog.ts";
 import { createRecommendationService } from "./api.ts";
-import { normalizeProfile, toggleSaved } from "./domain.ts";
+import { normalizeProfile } from "./domain.ts";
 import { createStorage } from "./storage.ts";
+import { AccountError, createAccountService } from "./account.ts";
+import type { AccountService, Member } from "./account.ts";
+import { getSupabaseClient } from "../supabase/client.ts";
 import type { StorageLike } from "./storage.ts";
 import type { Product, Profile, SavedItem, Selection } from "./types.ts";
 
@@ -11,6 +14,10 @@ export interface TofiState extends Omit<Selection, "profile"> {
   wardrobe: SavedItem[];
   ready: boolean;
   storageUnavailable: boolean;
+  member: Member | null;
+  accountStatus: "loading" | "guest" | "member" | "error";
+  accountError: string;
+  wardrobePending: boolean;
   pending: { target: string; kind: "recommend" | "refine" } | null;
   error: string;
   errorTarget: string | null;
@@ -25,6 +32,10 @@ export const serverSnapshot: TofiState = {
   requested: false,
   ready: false,
   storageUnavailable: false,
+  member: null,
+  accountStatus: "loading",
+  accountError: "",
+  wardrobePending: false,
   pending: null,
   error: "",
   errorTarget: null,
@@ -35,12 +46,14 @@ interface StoreOptions {
   local: StorageLike | null;
   session: StorageLike | null;
   service?: ReturnType<typeof createRecommendationService>;
+  account?: AccountService;
 }
 
 export function createTofiStore({
   local,
   session,
   service = createRecommendationService(),
+  account,
 }: StoreOptions) {
   let storageUnavailable = false;
   const storage = createStorage(local, () => {
@@ -48,7 +61,8 @@ export function createTofiStore({
   });
   const cache = createStorage(session);
   const profile = storage.profile();
-  const wardrobe = storage.wardrobe();
+  // Anonymous legacy storage has no verifiable owner and is never loaded as a member wardrobe.
+  const wardrobe: SavedItem[] = [];
   const selection = cache.selection();
   let state: TofiState = {
     ...serverSnapshot,
@@ -58,11 +72,15 @@ export function createTofiStore({
     resultProfile: selection.profile,
     requested: selection.requested,
     ready: true,
+    accountStatus: account ? "loading" : "guest",
     storageUnavailable,
   };
   const listeners = new Set<() => void>();
   let controller: AbortController | null = null;
   let version = 0;
+  let accountVersion = 0;
+  let accountRequest = 0;
+  let wardrobeRevision = 0;
   let toastTimer: ReturnType<typeof setTimeout> | undefined;
 
   function publish(patch: Partial<TofiState>) {
@@ -204,14 +222,150 @@ export function createTofiStore({
     updateProfile,
     recommend,
     refine,
-    save(product: Product, profile: Profile, comment: string) {
+    async syncAccount(identityHint?: string | null) {
+      const ticket = ++accountRequest;
+      const previous = state.member;
+      const revisionAtStart = wardrobeRevision;
+      if (identityHint !== undefined && identityHint !== previous?.id)
+        accountVersion++;
+      const switched =
+        previous && identityHint !== undefined && identityHint !== previous.id;
+      if (switched) {
+        cancelRequest();
+        cache.write("selection", null);
+        storage.write("profile", freshProfile());
+        publish({
+          member: null,
+          wardrobe: [],
+          profile: freshProfile(),
+          outfits: [],
+          resultProfile: null,
+          requested: false,
+          pending: null,
+          toast: "",
+          wardrobePending: false,
+        });
+      }
+      if (!account || identityHint === null) {
+        publish({
+          member: null,
+          wardrobe: [],
+          accountStatus: "guest",
+          accountError: "",
+          wardrobePending: false,
+        });
+        return;
+      }
+      publish({ accountStatus: "loading", accountError: "" });
+      try {
+        const member = await account.me();
+        const wardrobe = await account.list();
+        if (ticket !== accountRequest) return;
+        if (identityHint && identityHint !== member.id)
+          throw new Error("로그인 상태가 변경됐어요. 다시 확인해주세요.");
+        publish({
+          member,
+          wardrobe:
+            previous?.id === member.id &&
+            (state.wardrobePending || wardrobeRevision !== revisionAtStart)
+              ? state.wardrobe
+              : wardrobe,
+          accountStatus: "member",
+          accountError: "",
+        });
+      } catch (error) {
+        if (ticket !== accountRequest) return;
+        if (
+          error instanceof AccountError &&
+          [401, 403].includes(error.status)
+        ) {
+          accountVersion++;
+          cancelRequest();
+          cache.write("selection", null);
+          publish({
+            member: null,
+            wardrobe: [],
+            accountStatus: "guest",
+            wardrobePending: false,
+            accountError: "",
+            outfits: [],
+            resultProfile: null,
+            requested: false,
+            pending: null,
+          });
+        } else
+          publish({
+            accountStatus: "error",
+            accountError:
+              error instanceof Error
+                ? error.message
+                : "로그인 상태를 확인하지 못했어요.",
+          });
+      }
+    },
+    async save(product: Product, profile: Profile, comment: string) {
+      if (!state.member || state.accountStatus !== "member" || !account) {
+        notice("Google 로그인 후 내 옷장에 담을 수 있어요.");
+        return false;
+      }
+      if (state.wardrobePending) return false;
+      const ticket = accountVersion;
+      wardrobeRevision++;
       const saved = state.wardrobe.some(
         (item) => item.product.id === product.id,
       );
-      const wardrobe = toggleSaved(state.wardrobe, product, profile, comment);
-      storage.write("wardrobe", wardrobe);
-      publish({ wardrobe });
-      notice(saved ? "옷장에서 꺼냈어요." : "내 옷장에 담았어요.");
+      publish({ wardrobePending: true, accountError: "" });
+      try {
+        if (saved) {
+          await account.remove(product.id);
+          if (ticket !== accountVersion) return false;
+          publish({
+            wardrobe: state.wardrobe.filter(
+              (item) => item.product.id !== product.id,
+            ),
+          });
+        } else {
+          const item = await account.save(product.id, profile, comment);
+          if (ticket !== accountVersion) return false;
+          publish({
+            wardrobe: [
+              item,
+              ...state.wardrobe.filter(
+                (row) => row.product.id !== item.product.id,
+              ),
+            ],
+          });
+        }
+        notice(saved ? "옷장에서 꺼냈어요." : "내 옷장에 담았어요.");
+        return true;
+      } catch (error) {
+        if (ticket === accountVersion) {
+          if (
+            error instanceof AccountError &&
+            [401, 403].includes(error.status)
+          ) {
+            accountVersion++;
+            accountRequest++;
+            publish({
+              member: null,
+              wardrobe: [],
+              accountStatus: "guest",
+              wardrobePending: false,
+            });
+          }
+          publish({
+            accountError:
+              error instanceof Error
+                ? error.message
+                : "옷장에 저장하지 못했어요.",
+          });
+          notice("옷장 변경을 완료하지 못했어요. 다시 시도해주세요.");
+        }
+        return false;
+      } finally {
+        wardrobeRevision++;
+        if (ticket === accountVersion) publish({ wardrobePending: false });
+      }
     },
     cancelOutside(pathname: string) {
       if (state.pending && state.pending.target !== pathname) {
@@ -228,7 +382,7 @@ export function createTofiStore({
       }
     },
     syncStorage() {
-      publish({ profile: storage.profile(), wardrobe: storage.wardrobe() });
+      publish({ profile: storage.profile() });
     },
     clearError() {
       if (state.error) publish({ error: "", errorTarget: null });
@@ -259,6 +413,12 @@ function getBrowserStore() {
       local,
       session,
       service: recommendationService,
+      account: createAccountService(async () => {
+        const client = getSupabaseClient();
+        if (!client) return null;
+        const { data } = await client.auth.getSession();
+        return data.session?.access_token || null;
+      }),
     });
     window.addEventListener("storage", (event) => {
       if (event.key === null || event.key.startsWith("tofi.v1."))
@@ -279,8 +439,19 @@ export const actions = {
     getBrowserStore()?.recommend(profile, scenario),
   refine: (id: string, request: string) =>
     getBrowserStore()?.refine(id, request),
-  save: (product: Product, profile: Profile, comment: string) =>
-    getBrowserStore()?.save(product, profile, comment),
+  save: (product: Product, profile: Profile, comment: string) => {
+    const store = getBrowserStore();
+    if (store && !store.getSnapshot().member && typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("tofi:login-required", {
+          detail: window.location.pathname,
+        }),
+      );
+      return Promise.resolve(false);
+    }
+    return store?.save(product, profile, comment);
+  },
+  syncAccount: (hint?: string | null) => getBrowserStore()?.syncAccount(hint),
   cancelOutside: (path: string) => getBrowserStore()?.cancelOutside(path),
   clearError: () => getBrowserStore()?.clearError(),
 };

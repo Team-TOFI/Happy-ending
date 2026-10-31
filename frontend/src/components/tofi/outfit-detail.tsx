@@ -46,7 +46,11 @@ export function OutfitDetailScreen({ id }: { id: string }) {
   const lower =
     profile.group === "남성"
       ? "팬츠 바꾸기"
-      : outfit.products.some((product) => product.id.endsWith("-skirt"))
+      : outfit.products.some(
+            (product) =>
+              product.garmentType === "SKIRT" ||
+              (product.sample && product.id.endsWith("-skirt")),
+          )
         ? "팬츠로 바꾸기"
         : "스커트로 바꾸기";
   const quicks: [string, IconName][] = [
@@ -107,6 +111,9 @@ export function OutfitDetailScreen({ id }: { id: string }) {
                 </div>
                 <div className="product-actions">
                   <SaveButton
+                    disabled={
+                      state.wardrobePending || state.accountStatus === "loading"
+                    }
                     product={product}
                     saved={state.wardrobe.some(
                       (item) => item.product.id === product.id,

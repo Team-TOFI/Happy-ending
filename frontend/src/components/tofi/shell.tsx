@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, type ReactNode } from "react";
 import { bodyComplete } from "@/lib/tofi/domain";
 import { actions, recommendationService } from "@/lib/tofi/store";
+import { AuthBridge, AccountControl } from "./auth";
 import { useTofi } from "@/lib/tofi/use-tofi";
 
 function BrandLogo({ compact = false }: { compact?: boolean }) {
@@ -33,6 +34,7 @@ export function TofiShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="tofi-shell">
+      <AuthBridge />
       <a
         className="skip-link"
         href="#main"
@@ -70,6 +72,7 @@ export function TofiShell({ children }: { children: ReactNode }) {
                 <span className="nav-count">{state.wardrobe.length}</span>
               ) : null}
             </Link>
+            <AccountControl />
           </nav>
         </div>
       </header>
