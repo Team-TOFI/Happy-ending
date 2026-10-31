@@ -59,4 +59,4 @@ npm start
 
 `npm test`는 Node의 테스트 러너와 TypeScript 실행 기능을 사용합니다. 화면 이동 시 추천을 취소하고 오래된 응답을 무시합니다. 입력·응답 검증, 타임아웃·재시도 안내, 회원 전환 격리를 테스트합니다.
 
-[API 계약](docs/api-contract.md) · [시연 대본](../docs/submission/demo-script.md) · [외부 자원](../docs/submission/external-resources.md)
+[API 계약](docs/api-contract.md) · [외부 자원](../docs/submission/external-resources.md)
