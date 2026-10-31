@@ -1,11 +1,13 @@
 """FastAPI application. Run with uvicorn app.main:app --reload."""
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from app.api.ai_recommendations import router as ai_recommendation_router
 from app.api.members import router as members_router
 from app.api.recommendations import router as recommendation_router
+from app.config import cors_origins
 
 app = FastAPI(
     title="의류 추천 API",
@@ -27,6 +29,12 @@ app = FastAPI(
 app.include_router(recommendation_router)
 app.include_router(ai_recommendation_router)
 app.include_router(members_router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins(),
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
+)
 
 
 @app.middleware("http")
