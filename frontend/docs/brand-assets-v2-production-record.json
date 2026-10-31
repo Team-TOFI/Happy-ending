@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-31",
+  "version": 2,
+  "tool": "built-in image_gen.imagegen",
+  "revision": "Changed the capital T to lowercase t; recolored only the main-logo mannequin-i dot to warm toffee beige using the user's close-up reference.",
+  "assets": [
+    {
+      "file": "tofi-logo-transparent.png",
+      "width": 1945,
+      "height": 809,
+      "transparent_background": true,
+      "prompt": "Use case: precise-object-edit.\nAsset type: a faithful updated transparent logo PNG for the user's tofi personal shopping brand.\n\nINPUT IMAGE 1 is the EDIT TARGET: the approved standalone transparent espresso \"Tofi\" wordmark, with a slender mannequin as its final i.\nINPUT IMAGE 2 is a COLOR REFERENCE ONLY: a close-up of an ordinary i with a warm muted toffee-beige dot. Use only that dot's color, not the ordinary i stem.\nINPUT IMAGE 3 is a LETTERFORM REFERENCE ONLY: the earlier lowercase tofi dress-form concept board. Use only its first lowercase t shape as a starting point, not its wider mannequin or any other board element.\n\nMake ONLY these two requested changes to IMAGE 1:\n1. Replace the uppercase T with a LOWERCASE t. Exact brand text now reads \"tofi\", all four letters lowercase. The t should fit naturally beside the existing elegant round o and softly curved f: restrained editorial serif lettering, upright slim stem, small simple horizontal crossbar, a gently tapered upper terminal and a graceful short curved foot. Follow the earlier lowercase t letter in IMAGE 3, slightly softening its edges to match the rest. This is an ordinary refined lowercase t, NOT a clothes hanger or a new symbol, and definitely NOT an uppercase T. Adjust only the first letter's spacing as necessary for beautiful optical kerning; retain the other letters' exact silhouettes and relative sizes.\n2. Change ONLY the round dot above the mannequin-i from espresso to the warm muted toffee-beige of IMAGE 2, approximately #B99A75. This one dot is the sole color accent. Keep the dot's current size, round shape and position relative to the mannequin body unchanged. Keep the mannequin-i body's currently approved slim silhouette, width, height, waist, shoulder contours and little baseline serif foot EXACTLY unchanged. The mannequin body stays espresso brown. Do not replace it with the ordinary i stem in the color reference.\n\nPreserve the exact original o and f and mannequin body; all artwork except the single beige dot remains the existing deep espresso #3C2A22. Preserve the quiet sophisticated private personal shopper mood. Flat clean vector-like graphics; no gradient, no texture, no shadows, no outline, no additional symbols or text.\nOutput only the complete updated wordmark on a genuinely transparent alpha background, as a wide horizontal standalone logo with modest even transparent margins. No presentation board, no labels, no favicon samples, no background rectangle, no checkerboard illustration. Keep all ascenders, dot, baseline and serifs fully inside the canvas. This is a precise requested revision of the approved logo, not a new design."
+    },
+    {
+      "file": "tofi-favicon-brown.png",
+      "note": "Unchanged from the approved smaller-symbol favicon export.",
+      "prompt": "Use case: background-extraction.\nAsset type: final standalone square favicon PNG export. Input is the approved design board.\nExtract ONLY the large DARK ESPRESSO rounded-square favicon from the lower left of the input board, as one separate square image. This is faithful asset isolation, not a redesign. Preserve its approved cream-white slender mannequin-i symbol, round dot above, very short serif foot, and its reduced size: entire dot-to-foot mark occupies approximately 60 percent of the rounded-square height, centered optically, with wide even internal padding. Preserve the exact graceful silhouette of the approved mannequin-i, not a generic person or mannequin. The tile is solid espresso #3C2A22 with gently rounded corners, corner radius approximately 16 percent of side. Cream symbol #FAF7F2. Square canvas with tile flush to all four canvas edges, true alpha only in the rounded outer corner pixels. No cream outside background, no outer margins, no labels, no words, no extra objects, no tiny duplicate version, no shadow, no gradient, no texture, no 3D. Crisp flat solid-color high resolution brand icon. Genuinely transparent outer rounded corners."
+    },
+    {
+      "file": "tofi-favicon-beige.png",
+      "note": "Unchanged from the approved smaller-symbol favicon export.",
+      "prompt": "Use case: precise-object-edit.\nAsset type: final standalone beige favicon PNG, faithful color variant of the attached approved espresso favicon.\nINPUT IMAGE 1 is the exact SHAPE reference. Preserve its slender mannequin-i silhouette, detached dot, foot, centered position, size, generous internal padding, and square geometry. Produce the same icon as an INVERSE PALETTE variant: the current cream mannequin symbol and dot become solid dark espresso #3C2A22; the current dark espresso tile surface becomes solid warm light toffee #E9D9C7. Do not change the proportions or design at all.\nThis file will be encoded as a favicon. Use a completely OPAQUE image, no alpha channel, NO transparent regions. The canvas is a square filled uniformly edge to edge with opaque warm light toffee #E9D9C7. The only other color is the solid espresso mannequin-i. Full light-toffee canvas, no rounded tile contour, no outer background, no transparent holes, no vignette, no gradient, no shadow, no texture, no glow, no border, no duplicate icon or text. Sharp flat vector-style. The entire dot-to-foot mannequin silhouette occupies 60 percent of the square's height, centered both vertically and horizontally. The rounded outer-corner encoding will be handled in the file export; this image itself must be a plain solid fully opaque square with the approved dark mannequin centered."
+    },
+    {
+      "file": "tofi-favicon-brown.ico",
+      "sizes": [
+        16,
+        32,
+        48,
+        64,
+        128,
+        256
+      ]
+    },
+    {
+      "file": "tofi-favicon-beige.ico",
+      "sizes": [
+        16,
+        32,
+        48,
+        64,
+        128,
+        256
+      ]
+    }
+  ]
+}
