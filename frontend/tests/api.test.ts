@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { getBackendUrl } from "../src/lib/tofi/backend.ts";
 import {
   createRecommendationService,
   demoRecommendations,
@@ -14,6 +15,19 @@ const profile: Profile = {
   mood: "미니멀",
   tags: ["차분한 색감", "편한 착용감"],
 };
+
+test("recommendations use the same direct backend base as member requests", async () => {
+  const calls: string[] = [];
+  const service = createRecommendationService(
+    { apiBaseUrl: getBackendUrl(" https://api.gomin.today/// ") },
+    async (url) => {
+      calls.push(String(url));
+      return Response.json({ outfits: [] });
+    },
+  );
+  assert.deepEqual(await service.request(profile), []);
+  assert.deepEqual(calls, ["https://api.gomin.today/recommendations"]);
+});
 
 test("demo produces three outfits of four products and respects group and mood", async () => {
   const service = createRecommendationService({ demoDelayMs: 0 });

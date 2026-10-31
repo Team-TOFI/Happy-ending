@@ -1,5 +1,6 @@
 import { freshProfile } from "./catalog.ts";
 import { createRecommendationService } from "./api.ts";
+import { getBackendUrl } from "./backend.ts";
 import { normalizeProfile } from "./domain.ts";
 import { createStorage } from "./storage.ts";
 import { AccountError, createAccountService } from "./account.ts";
@@ -391,7 +392,7 @@ export function createTofiStore({
 }
 
 export const recommendationService = createRecommendationService({
-  apiBaseUrl: process.env.NEXT_PUBLIC_RECOMMENDATION_API_BASE_URL,
+  apiBaseUrl: getBackendUrl(),
 });
 let browserStore: ReturnType<typeof createTofiStore> | undefined;
 function getBrowserStore() {

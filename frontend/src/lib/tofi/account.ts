@@ -1,4 +1,5 @@
 import { normalizeWardrobe } from "./domain.ts";
+import { getBackendUrl } from "./backend.ts";
 import { record } from "./types.ts";
 import type { Profile, SavedItem } from "./types.ts";
 export interface Member {
@@ -23,13 +24,15 @@ export interface AccountService {
 export function createAccountService(
   token: () => Promise<string | null>,
   fetcher: typeof fetch = globalThis.fetch,
+  apiBaseUrl?: string,
 ): AccountService {
+  const base = getBackendUrl(apiBaseUrl);
   async function request(path: string, method = "GET", body?: unknown) {
     const access = await token();
     if (!access) throw new AccountError(401, "Google 로그인이 필요해요.");
     let response: Response;
     try {
-      response = await fetcher("/api" + path, {
+      response = await fetcher(base + path, {
         method,
         headers: {
           Authorization: "Bearer " + access,
