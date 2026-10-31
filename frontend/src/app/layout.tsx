@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { TofiShell } from "@/components/tofi/shell";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Hackathon",
-  description: "Next.js + FastAPI 프로젝트",
+  title: {
+    default: "tofi — 취향은 선명하게, 쇼핑은 단순하게",
+    template: "%s — tofi",
+  },
+  description: "바디타입과 추구미를 바탕으로 T.P.O에 맞는 스타일을 제안합니다.",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <TofiShell>{children}</TofiShell>
+      </body>
     </html>
   );
 }
