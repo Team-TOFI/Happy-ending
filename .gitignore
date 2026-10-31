@@ -44,3 +44,19 @@ next-env.d.ts
 /backend/data/
 /.playwright-cli/
 /.worktrees/
+
+.worktrees/
+**/node_modules/
+**/.next/
+**/out/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.playwright-cli/
+backend/data/
+demo
+
+# Deployment secrets and local catalog seeds
+/.env.production
+/supabase/seed.sql
