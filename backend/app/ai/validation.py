@@ -132,6 +132,25 @@ VALUE_LABELS = {
 }
 
 
+def verified_explanations(candidates, selection):
+    """Remove unsupported explanation claims without changing any selected product."""
+    allowed = {p.id: p for p in candidates}
+    choices = []
+    removed = 0
+    for choice in selection.outfits:
+        reasons = []
+        for reason in choice.reasons:
+            item = allowed.get(reason.product_id)
+            actual = values(item.attributes.get(reason.attribute)) if item else set()
+            claimed = {reason.value} if isinstance(reason.value, str) else set(reason.value)
+            if reason.product_id in choice.product_ids and claimed and claimed <= actual:
+                reasons.append(reason)
+            else:
+                removed += 1
+        choices.append(choice.model_copy(update={"reasons": reasons}))
+    return selection.model_copy(update={"outfits": choices}), removed
+
+
 def validate_selection(candidates, request, selection, *, required_groups):
     if len(selection.outfits) > request.count:
         raise AIInvalidResponse("요청 개수를 초과한 코디입니다")

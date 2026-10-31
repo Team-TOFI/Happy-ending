@@ -123,21 +123,97 @@ def test_ai_pipeline_returns_only_real_metadata_and_retains_pending():
     [
         {"product_ids": [999], "reasons": []},
         {"product_ids": [1, 1], "reasons": []},
-        {
-            "product_ids": [1],
-            "reasons": [
-                {"product_id": 1, "attribute": "pattern", "value": "SOLID", "dimension": "tpo"}
-            ],
-        },
     ],
 )
-def test_invalid_ids_duplicates_and_invented_evidence_are_rejected(choice):
+def test_invalid_ids_and_duplicates_are_rejected(choice):
     with pytest.raises(AIInvalidResponse):
         recommend_with_ai(
             [product(fit="RELAXED")],
             request(),
             FakeAI(selection={"outfits": [choice], "questions": []}),
         )
+
+
+def test_repeated_unverified_explanation_does_not_discard_valid_products():
+    ai = FakeAI(
+        selection={
+            "outfits": [
+                {
+                    "product_ids": [1],
+                    "reasons": [
+                        {
+                            "product_id": 1,
+                            "attribute": "silhouette",
+                            "value": "WIDE",
+                            "dimension": "body",
+                        },
+                        {
+                            "product_id": 1,
+                            "attribute": "fit",
+                            "value": "RELAXED",
+                            "dimension": "body",
+                        },
+                    ],
+                }
+            ],
+            "questions": [],
+        }
+    )
+    result = recommend_with_ai([product(fit="RELAXED")], request(), ai)
+    assert result.status == "ok"
+    assert [p.id for p in result.outfits[0].items] == [1]
+    assert [r.attribute for r in result.outfits[0].reasons] == ["fit"]
+    assert "WIDE" not in result.outfits[0].model_dump_json()
+    assert any("설명" in warning and "제외" in warning for warning in result.warnings)
+    assert [stage for stage, _ in ai.calls] == ["interpret", "select", "select"]
+
+
+def test_unknown_pattern_explanation_is_never_presented_as_solid():
+    ai = FakeAI(
+        selection={
+            "outfits": [
+                {
+                    "product_ids": [1],
+                    "reasons": [
+                        {
+                            "product_id": 1,
+                            "attribute": "pattern",
+                            "value": "SOLID",
+                            "dimension": "tpo",
+                        },
+                    ],
+                }
+            ],
+            "questions": [],
+        }
+    )
+    result = recommend_with_ai([product()], request(), ai)
+    assert result.status == "ok"
+    assert result.outfits[0].reasons == []
+    assert result.outfits[0].summary == "확보된 상품 정보로 구성한 조합"
+
+
+def test_explanation_cleanup_cannot_bypass_required_groups():
+    ai = FakeAI(
+        selection={
+            "outfits": [
+                {
+                    "product_ids": [1],
+                    "reasons": [
+                        {
+                            "product_id": 1,
+                            "attribute": "silhouette",
+                            "value": "WIDE",
+                            "dimension": "body",
+                        },
+                    ],
+                }
+            ],
+            "questions": [],
+        }
+    )
+    with pytest.raises(AIInvalidResponse):
+        recommend_with_ai([product(), product(2, "BOTTOM")], request(), ai)
 
 
 def test_clarification_and_no_candidates_do_not_call_selection():

@@ -8,7 +8,7 @@ from app.recommendation.policy import load_policy
 from .candidates import compact, effective_conditions, prepare_candidates, required_groups_for
 from .client import AIInvalidResponse
 from .schemas import AIResponse, Plan, Selection
-from .validation import validate_selection
+from .validation import validate_selection, verified_explanations
 
 logger = logging.getLogger(__name__)
 
@@ -177,6 +177,7 @@ def recommend_with_ai(
                 for p in selection_context["previous_products"]
             ],
         }
+    removed_explanations = 0
     for attempt in range(2):
         selection = None
         try:
@@ -185,6 +186,8 @@ def recommend_with_ai(
                 return AIResponse(
                     **common, status="needs_information", questions=selection.questions
                 )
+            if attempt:
+                selection, removed_explanations = verified_explanations(candidates, selection)
             outfits, pending = validate_selection(
                 candidates, request, selection, required_groups=required_groups
             )
@@ -205,6 +208,9 @@ def recommend_with_ai(
             selection_payload = dict(selection_payload, validation_error=str(error))
             if selection is not None:
                 selection_payload["previous_selection"] = selection.model_dump()
+    if removed_explanations:
+        logger.warning("Omitted %s unverified AI explanation claims", removed_explanations)
+        common["warnings"].append("일부 AI 설명은 상품 근거를 확인할 수 없어 제외했습니다.")
     if pending:
         common["warnings"].append(
             "미검수 속성을 포함한 추천입니다. 실제 색상·패턴과 사이즈를 확인하세요."

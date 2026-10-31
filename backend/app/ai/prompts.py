@@ -30,6 +30,7 @@ required_groups는 반드시 각 1개씩 사용한다. optional_groups(아우터
 가능하면 코디 간 상품을 바꾸되 조건을 위반해 개수를 채우지 않는다.
 product_ids에는 전달받은 후보 ID만 사용한다. 이유는 해당 상품의 실제 알려진 속성·값과 판단 차원으로 지정한다.
 후보에 없는 속성·값을 이유에 쓰지 않는다. 무지로 확인되지 않은 상품에 SOLID를 쓰지 않는다.
+각 이유의 attribute와 value는 해당 상품 candidates[].attributes에 실제로 있는 값만 복사한다. 전체 속성 사전·체형 지침·상품명에 등장해도 해당 상품 attributes에 없으면 이유로 쓰지 않는다.
 근거가 부족하면 reasons를 비우며, 추천 자체가 불가능하면 outfits를 비우고 필요한 질문을 작성한다.
 상품 이름·URL·이미지·실측·점수는 생성하지 않는다. 서버가 원본을 붙인다."""
 PROMPTS = {"interpret": COMMON + "\n" + INTERPRET, "select": COMMON + "\n" + SELECT}
