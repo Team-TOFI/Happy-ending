@@ -1,74 +1,62 @@
 # TOFI frontend
 
-Next.js **16.4.3**, React **19.3.0**, TypeScript 기반 App Router 프론트엔드입니다. 토피넛 라이트 브라운·크림·에스프레소의 기존 화면과 기능을 React 컴포넌트로 옮겼습니다.
+Next.js 16.4.3·React 19.3·TypeScript App Router 프론트엔드입니다. 실제 카탈로그 추천과 Google 로그인·회원별 옷장을 연결합니다.
 
 ## 실행
 
-Node.js 22.18 이상을 사용합니다. 저장소 루트에서:
+Node.js 22.18 이상이 필요합니다. 저장소 루트에서 실행합니다.
 
-```sh
-cd frontend
-npm ci
-npm run dev
+```bash
+npm ci --prefix frontend
+test -f frontend/.env.local || cp frontend/.env.example frontend/.env.local
+npm run dev --prefix frontend
 ```
 
-`http://localhost:3000`에서 확인합니다. `.env.local`이 없어도 샘플 모드로 실행됩니다.
+`frontend/.env.local`에 `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`를 설정합니다. 로컬 값은 [루트 README](../README.md)를 참고합니다. 공개 변수는 빌드에 반영되므로 배포 환경에서 바꿨다면 재빌드합니다.
 
-```sh
-npm run typecheck
-npm run lint
-npm test
-npm run build
-npm run start
-```
+## 실제 API 연결
 
-`npm test`는 Node 내장 TypeScript 실행 기능과 테스트 러너를 사용합니다. 테스트 전용 외부 라이브러리는 추가하지 않았습니다. `npm run start`는 빌드 후 프로덕션 서버를 실행합니다.
-
-## 화면 경로
-
-| 화면 | 경로 |
-| --- | --- |
-| 01 첫 진입 | `/` |
-| 02 Body Type | `/style/body-type` |
-| 03 TPO | `/style/tpo` |
-| 04 추구미 | `/style/mood` |
-| 05 Tofi Pick | `/picks` |
-| 06 아이템·수정 | `/picks/[id]` |
-| 07 내 옷장 | `/wardrobe` |
-
-각 경로는 `src/app/`의 서버 페이지입니다. 선택 컨트롤과 브라우저 저장은 `src/components/tofi/`의 클라이언트 컴포넌트가 처리합니다. `next/link`로 이동하고 상세 경로의 비동기 `params`는 서버에서 읽습니다.
-
-## 데이터와 상태
-
-- `src/lib/tofi/types.ts`: Profile, Product, Outfit, SavedItem 타입.
-- `catalog.ts`, `domain.ts`: 샘플 카탈로그, 입력·응답 검증, 태그 제한, 저장 처리.
-- `api.ts`: 샘플 추천·수정과 실제 API 요청 어댑터.
-- `store.ts`, `use-tofi.ts`: `useSyncExternalStore` 기반 상태 구독, 저장·복원, 요청 취소.
-- `src/app/globals.css`: 기존 시안의 디자인 토큰과 반응형 스타일.
-
-서버 렌더링과 hydration에는 동일한 초기 스냅샷을 사용합니다. 개인 프로필과 옷장은 브라우저에서만 읽습니다. localStorage의 `tofi.v1.profile`·`tofi.v1.wardrobe`에 입력과 저장 상품을 보관하고, 같은 탭의 sessionStorage에 `tofi.v1.selection`을 보관합니다. 유효하지 않은 JSON이나 `null`은 사용할 수 있는 초기 상태로 복구합니다.
-
-추천 당시 프로필은 편집 중인 프로필과 별도로 보관합니다. 코디를 수정해도 해당 추천의 체형·TPO·추구미를 유지하고, 관심 상품에는 저장 당시 조건과 코멘트가 남습니다. 화면을 떠나면 진행 중인 요청을 취소해 오래된 응답이 새 화면을 덮어쓰지 않도록 합니다.
-
-## API 후속 연결
-
-실제 추천 API는 사용자 요청에 따라 후속 작업입니다. 현재 상품·가격·이미지·추천 코멘트는 시연용 예시이고 실제 구매 링크는 제공하지 않습니다. 샘플 수정은 캐주얼하게 / 예산 낮추기 / 하의 변경을 지원하며 그 외 자유 요청은 가능한 시연 요청을 안내합니다.
-
-서버가 준비되면 `.env.example`을 `.env.local`로 복사하고 다음 값을 설정합니다.
+브라우저가 `${NEXT_PUBLIC_API_BASE_URL}/recommendations`, `/auth/me`, `/wardrobe`로 직접 요청합니다. `/api` 프록시는 제거되었습니다. 기본 API 주소는 개발 시 `http://127.0.0.1:8000`, production에서는 `https://api.gomin.today`입니다. 이전 `BACKEND_URL` 및 `NEXT_PUBLIC_RECOMMENDATION_API_BASE_URL`은 사용하지 않습니다. 백엔드의 `CORS_ORIGINS`에 프론트 origin을 허용해야 합니다.
 
 ```dotenv
-BACKEND_URL=http://127.0.0.1:8000
-NEXT_PUBLIC_RECOMMENDATION_API_BASE_URL=/api
+NEXT_PUBLIC_API_BASE_URL=https://api.gomin.today
+NEXT_PUBLIC_SUPABASE_URL=https://프로젝트ID.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=공개키
 ```
 
-기존 `next.config.ts`의 `/api/*` → FastAPI 프록시는 유지했습니다. 위 설정은 `POST /api/recommendations`로 연결합니다. [API contract](docs/api-contract.md)를 실제 서버 명세와 맞춘 후 활성화해야 합니다. 다른 서버를 직접 호출하려면 공개 API 주소와 CORS가 필요합니다. `NEXT_PUBLIC_` 값은 브라우저에 공개되고 빌드에 반영되므로 비밀 키를 넣지 마세요. 변경 후에는 개발 서버를 재시작하고 배포 빌드는 다시 생성하세요.
+샘플 추천 함수는 단위 테스트·개발 보조로 남아 있지만 앱의 기본 추천 서비스는 실제 API를 사용합니다. 홈의 스타일 예시 이미지는 샘플이며 실제 추천 결과의 상품 이미지와 구분합니다.
 
-## 시연과 검증
+## 화면
 
-상하체 믹스 → 상체 웨이브·하체 스트레이트 → 발표 → 미니멀과 태그 → 토피 PICK → 아이템 확인 → 담기 → 수정 → 내 옷장 → 새로고침 순서로 확인합니다.
+| 경로 | 내용 |
+|---|---|
+| `/` | 서비스 소개·스타일 예시 |
+| `/style/body-type` | 전신 또는 상하체 체형 |
+| `/style/tpo` | 입을 상황 |
+| `/style/mood` | 추구미·태그 |
+| `/picks` | 추천 결과 |
+| `/picks/[id]` | 상세 상품·코디 수정 |
+| `/login` | Google 로그인 |
+| `/auth/callback` | Supabase PKCE 코드 교환 |
+| `/wardrobe` | 현재 회원 옷장 |
 
-오류 상태: `/style/mood?demo=error`에서 토피 PICK. 실패 후 다시 시도하기는 정상 샘플을 불러옵니다. 빈 결과: `/style/mood?demo=empty`. 이 옵션들은 실제 API 모드에는 영향을 주지 않습니다.
+## 상태와 회원 데이터
 
-[검증 기록](docs/verification.md) · [디자인 기준](DESIGN.md) · [제품 기준](PRODUCT.md)
+프로필은 localStorage, 현재 추천은 sessionStorage에 보관합니다. 옷장은 서버에서 현재 회원 기준으로 읽습니다. 과거 비회원 localStorage 옷장은 새 회원에게 자동 귀속하지 않습니다. 로그아웃·계정 변경 시 회원별 상태를 비우고 늦게 도착한 이전 응답이 새 회원 상태를 덮어쓰지 않도록 검사합니다.
 
-`public/assets/`의 상품·추구미·실루엣은 내장 imagegen으로 생성한 시연용 이미지입니다. 생성 프롬프트는 `docs/*.prompt.txt`와 PNG 메타데이터에 보관했습니다.
+Supabase SDK가 Google OAuth를 시작하고 콜백에서 세션을 교환합니다. 회원 API에는 세션 access token을 Bearer로 보냅니다. 회원 ID를 직접 지정해 저장하지 않습니다. 로그아웃용 `/auth/logout`은 프론트 쿠키 정리 경로로 유지합니다.
+
+## 검증
+
+```bash
+cd frontend
+npm test
+npm run lint
+npm run typecheck
+npm run build
+npm start
+```
+
+`npm test`는 Node의 테스트 러너와 TypeScript 실행 기능을 사용합니다. 화면 이동 시 추천을 취소하고 오래된 응답을 무시합니다. 입력·응답 검증, 타임아웃·재시도 안내, 회원 전환 격리를 테스트합니다.
+
+[API 계약](docs/api-contract.md) · [시연 대본](../docs/submission/demo-script.md) · [외부 자원](../docs/submission/external-resources.md)
