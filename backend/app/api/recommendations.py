@@ -1,5 +1,6 @@
 """API transport only; policy, ranking, and composition stay in separate modules."""
 
+import logging
 from typing import Annotated
 
 import psycopg
@@ -14,16 +15,64 @@ from app.recommendation.policy import load_policy
 from app.recommendation.service import recommend
 
 router = APIRouter(prefix="/recommendations", tags=["recommendations"])
+logger = logging.getLogger(__name__)
+
+
+def _failure_reason(error: Exception, stage: str) -> str:
+    if stage == "configuration":
+        return "invalid_configuration"
+    sql_reasons = {
+        "28P01": "invalid_password",
+        "28000": "invalid_authorization",
+        "3D000": "invalid_database",
+        "42P01": "undefined_table",
+        "42501": "insufficient_privilege",
+        "23503": "foreign_key_violation",
+        "53300": "too_many_connections",
+    }
+    if reason := sql_reasons.get(getattr(error, "sqlstate", None)):
+        return reason
+    # Inspect locally; never log the raw exception, DSN, SQL parameters or traceback.
+    message = str(error).lower()
+    for marker, reason in (
+        ("password authentication failed", "invalid_password"),
+        ("tenant or user not found", "pooler_user_not_found"),
+        ("network is unreachable", "network_unreachable"),
+        ("no route to host", "network_unreachable"),
+        ("could not translate host name", "dns_resolution_failed"),
+        ("name or service not known", "dns_resolution_failed"),
+        ("connection refused", "connection_refused"),
+        ("timeout", "connection_timeout"),
+        ("timed out", "connection_timeout"),
+        ("certificate verify failed", "tls_certificate_failed"),
+    ):
+        if marker in message:
+            return reason
+    return "unclassified_database_error"
 
 
 def get_connection():
+    stage = "configuration"
     try:
+        url = database_url()
+        stage = "connect"
         with psycopg.connect(
-            database_url(), autocommit=True, connect_timeout=10, row_factory=dict_row
+            url, autocommit=True, connect_timeout=10, row_factory=dict_row
         ) as connection:
+            stage = "operation"
             yield connection
+            stage = "close"
     except (ValueError, psycopg.Error) as error:
-        raise HTTPException(status_code=503, detail="상품 데이터에 접근할 수 없습니다") from error
+        logger.error(
+            "database_failure stage=%s error_type=%s sqlstate=%s reason=%s",
+            stage,
+            type(error).__name__,
+            getattr(error, "sqlstate", None) or "none",
+            _failure_reason(error, stage),
+        )
+        raise HTTPException(
+            status_code=503, detail="데이터베이스 처리에 실패했습니다. 서버 로그를 확인하세요"
+        ) from error
 
 
 @router.get(
