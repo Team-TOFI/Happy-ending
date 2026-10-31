@@ -88,3 +88,28 @@ def test_resume_preserves_successes_and_errors_and_only_fills_remaining_quota(sn
     assert resumed["complete"] is True
     assert len(resumed["errors"]) == 1
     assert [p["external_id"] for p in resumed["products"]] == ["1", "2", "3"]
+
+
+def test_quota_counts_only_gender_eligible_products(snapshot):
+    base = parse_product(snapshot)
+    saved = []
+
+    def collect(url):
+        return base.model_copy(
+            update={
+                "external_id": url,
+                "gender_raw": {"one": "여", "two": "남", "three": "공용"}[url],
+            }
+        )
+
+    report = collect_quota(
+        ["one", "two", "three"],
+        category_code="001010",
+        quota=2,
+        collect=collect,
+        save=lambda p: saved.append(p) or len(saved),
+        delay=0,
+        accept=lambda p: p.gender_raw in {"남", "공용"},
+    )
+    assert report["complete"] and report["succeeded"] == 2 and report["skipped"] == 1
+    assert [p.gender_raw for p in saved] == ["남", "공용"]

@@ -10,6 +10,7 @@ CATEGORIES = {
     "long_skirts": ("100006", "롱스커트"),
     "outerwear": ("002", "아우터"),
     "shoes": ("103", "신발"),
+    "bags": ("004", "가방"),
 }
 TOP_SUBCATEGORIES = {
     "long_sleeve_tshirts": ("001010", "긴소매 티셔츠"),
@@ -33,7 +34,9 @@ ALIASES = {
 }
 
 
-def resolve_categories(names: list[str]) -> list[CategoryTarget]:
+def resolve_categories(names: list[str], *, gender: str = "F") -> list[CategoryTarget]:
+    if gender not in {"F", "M"}:
+        raise ValueError("성별 필터는 F 또는 M이어야 합니다")
     codes: dict[str, CategoryTarget] = {}
     for name in names:
         for key in ALIASES.get(name, (name,)):
@@ -41,6 +44,6 @@ def resolve_categories(names: list[str]) -> list[CategoryTarget]:
                 raise ValueError(f"지원하지 않는 무신사 카테고리입니다: {name}")
             code, label = CATEGORIES[key]
             codes[code] = CategoryTarget(
-                code, label, f"https://www.musinsa.com/category/{code}/goods?gf=F"
+                code, label, f"https://www.musinsa.com/category/{code}/goods?gf={gender}"
             )
     return list(codes.values())

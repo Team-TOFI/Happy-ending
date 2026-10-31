@@ -47,3 +47,12 @@ def test_all_nine_top_subcategories_have_explicit_codes():
         "001008",
     }
     assert len(targets) == 9
+
+
+def test_male_categories_include_bags_and_keep_default_female_filter():
+    targets = resolve_categories(["tops", "pants", "outerwear", "shoes", "bags"], gender="M")
+    assert [t.code for t in targets] == ["001", "003", "002", "103", "004"]
+    assert all(t.url.endswith("?gf=M") for t in targets)
+    assert resolve_categories(["tops"])[0].url.endswith("?gf=F")
+    with pytest.raises(ValueError):
+        resolve_categories(["tops"], gender="other")

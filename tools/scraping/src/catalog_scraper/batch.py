@@ -20,6 +20,7 @@ def collect_quota(
     delay: float = 2,
     on_result: Callable[[dict], None] | None = None,
     initial_report: dict | None = None,
+    accept: Callable[[Product], bool] | None = None,
 ) -> dict:
     if quota < 1:
         raise ValueError("quota must be positive")
@@ -68,6 +69,7 @@ def collect_quota(
                 not product.category_code
                 or not product.category_code.startswith(category_code)
                 or key in seen_products
+                or (accept is not None and not accept(product))
             ):
                 report["skipped"] += 1
             else:
@@ -81,6 +83,7 @@ def collect_quota(
                         "external_id": product.external_id,
                         "url": product.product_url,
                         "category_code": product.category_code,
+                        "gender_raw": product.gender_raw,
                         "images": len(product.image_urls),
                         "sizes": len(product.sizes),
                         "size_status": product.size_status,
