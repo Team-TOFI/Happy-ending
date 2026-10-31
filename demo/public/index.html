@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>코디 추천 · 데모</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="header"><a href="/" class="wordmark">코디 추천 <span>DEMO</span></a><span class="header-note">현재 상품으로 추천을 확인하세요</span></header>
+  <main class="workspace">
+    <aside class="controls">
+      <h1>어떤 옷을 찾나요?</h1>
+      <p class="intro">체형과 오늘의 상황을 알려주세요.</p>
+      <form id="recommendation-form">
+        <label for="body-type">전신 체형</label>
+        <select id="body-type" name="body_type"><option value="Natural">내추럴</option><option value="Straight">스트레이트</option><option value="Wave">웨이브</option></select>
+        <label for="tpo">입을 상황</label>
+        <input id="tpo" name="tpo" value="주말 카페와 산책" maxlength="300" required>
+        <div class="presets" aria-label="상황 예시"><button type="button" data-preset="daily">일상</button><button type="button" data-preset="funeral">장례식</button></div>
+        <label for="aesthetic">추구미</label>
+        <input id="aesthetic" name="aesthetic" value="편안한 미니멀" maxlength="160" required>
+        <label for="context">추가 요청 <span class="optional">선택</span></label>
+        <textarea id="context" name="context" rows="3" maxlength="1500" placeholder="선호하거나 피하고 싶은 옷을 적어주세요."></textarea>
+        <details class="extra"><summary>키·몸무게·예산 추가</summary>
+          <div class="two-fields"><div><label for="height">키 (cm)</label><input id="height" name="height" type="number" min="1" max="260" step="0.1" inputmode="decimal" placeholder="165"></div><div><label for="weight">몸무게 (kg)</label><input id="weight" name="weight" type="number" min="1" max="400" step="0.1" inputmode="decimal" placeholder="55"></div></div>
+          <label for="budget">코디 전체 예산 (원)</label><input id="budget" name="budget" type="number" min="0" step="1000" inputmode="numeric" placeholder="예산 제한 없음">
+        </details>
+        <div class="count-row"><label for="count">추천 개수</label><select id="count" name="count"><option value="3">최대 3개</option><option value="2">최대 2개</option><option value="1">1개</option></select></div>
+        <button class="submit" id="submit-button" type="submit"><span class="spinner" aria-hidden="true"></span><span id="submit-label">코디 추천받기</span><span class="arrow" aria-hidden="true">↗</span></button>
+        <p class="footnote">확인되지 않은 상품 특징은 추정하지 않습니다.</p>
+      </form>
+    </aside>
+    <section class="results" aria-labelledby="results-title" aria-busy="false">
+      <div class="result-header"><h2 id="results-title">추천 결과</h2><span id="result-count"></span></div>
+      <div id="status" class="status empty" role="status" aria-live="polite"><span class="state-mark" aria-hidden="true">↗</span><h3>나에게 맞는 코디를 찾아보세요</h3><p>조건을 입력하면 실제 상품 이미지와 추천 이유를 보여드려요.</p></div>
+      <div id="notices" class="notices" hidden></div>
+      <div id="outfits"></div>
+      <details id="response-details" class="raw-response" hidden><summary>응답 데이터 보기</summary><pre id="raw-response"></pre></details>
+    </section>
+  </main>
+</body>
+</html>

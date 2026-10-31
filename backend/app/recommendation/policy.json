@@ -1,0 +1,749 @@
+{
+  "version": "2026-10-31.v2",
+  "weights": {
+    "body": 0.5,
+    "tpo": 0.3,
+    "aesthetic": 0.2
+  },
+  "sources": {
+    "body": "docs/references/body-style-reference.png",
+    "tpo": "initial_service_policy",
+    "aesthetic": "initial_service_policy"
+  },
+  "body_types": {
+    "Straight": "스트레이트",
+    "Wave": "웨이브",
+    "Natural": "내추럴"
+  },
+  "tpos": {
+    "DAILY": "일상",
+    "WORK": "출근",
+    "PRESENTATION": "발표",
+    "INTERVIEW": "면접",
+    "DATE": "데이트",
+    "WEDDING_GUEST": "하객",
+    "TRAVEL": "여행"
+  },
+  "aesthetics": {
+    "MINIMAL": "미니멀",
+    "CLASSIC": "클래식",
+    "FEMININE": "페미닌",
+    "CASUAL": "캐주얼",
+    "STREET": "스트리트",
+    "BOHEMIAN": "보헤미안"
+  },
+  "rules": [
+    {
+      "id": "body.straight.fit",
+      "dimension": "body",
+      "selector": "Straight",
+      "attribute": "fit",
+      "values": [
+        "REGULAR"
+      ],
+      "points": 20,
+      "reason": "기본핏 선호",
+      "groups": [
+        "TOP",
+        "OUTER"
+      ],
+      "body_scope": "upper"
+    },
+    {
+      "id": "body.straight.neck",
+      "dimension": "body",
+      "selector": "Straight",
+      "attribute": "neckline",
+      "values": [
+        "V_NECK"
+      ],
+      "points": 15,
+      "reason": "V넥 가점",
+      "groups": [
+        "TOP",
+        "OUTER"
+      ],
+      "body_scope": "upper"
+    },
+    {
+      "id": "body.straight.line",
+      "dimension": "body",
+      "selector": "Straight",
+      "attribute": "silhouette",
+      "values": [
+        "STRAIGHT",
+        "H_LINE"
+      ],
+      "points": 20,
+      "reason": "직선형 실루엣",
+      "groups": [
+        "BOTTOM"
+      ],
+      "body_scope": "lower"
+    },
+    {
+      "id": "body.wave.fit",
+      "dimension": "body",
+      "selector": "Wave",
+      "attribute": "fit",
+      "values": [
+        "FITTED"
+      ],
+      "points": 20,
+      "reason": "슬림핏 가점",
+      "groups": [
+        "TOP",
+        "OUTER"
+      ],
+      "body_scope": "upper"
+    },
+    {
+      "id": "body.wave.waist",
+      "dimension": "body",
+      "selector": "Wave",
+      "attribute": "waistline",
+      "values": [
+        "HIGH_RISE"
+      ],
+      "points": 20,
+      "reason": "높은 허리선",
+      "groups": [
+        "BOTTOM"
+      ],
+      "body_scope": "lower"
+    },
+    {
+      "id": "body.wave.neck",
+      "dimension": "body",
+      "selector": "Wave",
+      "attribute": "neckline",
+      "values": [
+        "ROUND"
+      ],
+      "points": 10,
+      "reason": "라운드넥 선호",
+      "groups": [
+        "TOP",
+        "OUTER"
+      ],
+      "body_scope": "upper"
+    },
+    {
+      "id": "body.wave.detail",
+      "dimension": "body",
+      "selector": "Wave",
+      "attribute": "decoration",
+      "values": [
+        "FRILL",
+        "RUFFLE",
+        "RIBBON",
+        "WAIST_EMPHASIS"
+      ],
+      "points": 15,
+      "reason": "곡선·허리 디테일",
+      "groups": [
+        "TOP",
+        "OUTER"
+      ],
+      "body_scope": "upper"
+    },
+    {
+      "id": "body.natural.fit",
+      "dimension": "body",
+      "selector": "Natural",
+      "attribute": "fit",
+      "values": [
+        "RELAXED",
+        "OVERSIZED"
+      ],
+      "points": 20,
+      "reason": "여유 있는 핏",
+      "groups": [
+        "TOP",
+        "OUTER"
+      ],
+      "body_scope": "upper"
+    },
+    {
+      "id": "body.natural.line",
+      "dimension": "body",
+      "selector": "Natural",
+      "attribute": "silhouette",
+      "values": [
+        "WIDE",
+        "SEMI_WIDE"
+      ],
+      "points": 20,
+      "reason": "넓은 바지 실루엣",
+      "groups": [
+        "BOTTOM"
+      ],
+      "body_scope": "lower"
+    },
+    {
+      "id": "body.natural.layer",
+      "dimension": "body",
+      "selector": "Natural",
+      "attribute": "decoration",
+      "values": [
+        "LAYERED"
+      ],
+      "points": 15,
+      "reason": "레이어드 디테일",
+      "groups": [
+        "TOP",
+        "OUTER"
+      ],
+      "body_scope": "upper"
+    },
+    {
+      "id": "tpo.daily.type",
+      "dimension": "tpo",
+      "selector": "DAILY",
+      "attribute": "garment_type",
+      "values": [
+        "LONG_SLEEVE_TEE",
+        "SHORT_SLEEVE_TEE",
+        "KNIT",
+        "POLO",
+        "SWEATSHIRT",
+        "SNEAKERS"
+      ],
+      "points": 15,
+      "reason": "일상 활용",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.daily.fit",
+      "dimension": "tpo",
+      "selector": "DAILY",
+      "attribute": "fit",
+      "values": [
+        "REGULAR",
+        "RELAXED"
+      ],
+      "points": 10,
+      "reason": "편안한 기본형",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.work.type",
+      "dimension": "tpo",
+      "selector": "WORK",
+      "attribute": "garment_type",
+      "values": [
+        "SHIRT",
+        "BLOUSE",
+        "SHIRT_BLOUSE",
+        "KNIT",
+        "BLAZER",
+        "COAT",
+        "LOAFERS"
+      ],
+      "points": 20,
+      "reason": "출근용 단정한 구성",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.work.pattern",
+      "dimension": "tpo",
+      "selector": "WORK",
+      "attribute": "pattern",
+      "values": [
+        "GRAPHIC"
+      ],
+      "points": -15,
+      "reason": "큰 그래픽 우선순위 조정",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.presentation.type",
+      "dimension": "tpo",
+      "selector": "PRESENTATION",
+      "attribute": "garment_type",
+      "values": [
+        "SHIRT",
+        "BLOUSE",
+        "SHIRT_BLOUSE",
+        "KNIT",
+        "BLAZER",
+        "LOAFERS"
+      ],
+      "points": 25,
+      "reason": "발표용 정돈된 인상",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.presentation.pattern",
+      "dimension": "tpo",
+      "selector": "PRESENTATION",
+      "attribute": "pattern",
+      "values": [
+        "GRAPHIC",
+        "FLORAL"
+      ],
+      "points": -15,
+      "reason": "시선 분산 줄이기",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.interview.type",
+      "dimension": "tpo",
+      "selector": "INTERVIEW",
+      "attribute": "garment_type",
+      "values": [
+        "SHIRT",
+        "SHIRT_BLOUSE",
+        "BLAZER",
+        "COAT",
+        "LOAFERS"
+      ],
+      "points": 25,
+      "reason": "면접 격식 우선",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.interview.casual",
+      "dimension": "tpo",
+      "selector": "INTERVIEW",
+      "attribute": "garment_type",
+      "values": [
+        "HOODIE",
+        "SWEATSHIRT",
+        "SHORT_SLEEVE_TEE",
+        "SLEEVELESS"
+      ],
+      "points": -30,
+      "reason": "캐주얼 품목 감점",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.date.detail",
+      "dimension": "tpo",
+      "selector": "DATE",
+      "attribute": "decoration",
+      "values": [
+        "LACE",
+        "RIBBON",
+        "FRILL"
+      ],
+      "points": 15,
+      "reason": "데이트용 포인트",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.date.texture",
+      "dimension": "tpo",
+      "selector": "DATE",
+      "attribute": "texture",
+      "values": [
+        "SOFT"
+      ],
+      "points": 10,
+      "reason": "부드러운 질감 표현",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.wedding.type",
+      "dimension": "tpo",
+      "selector": "WEDDING_GUEST",
+      "attribute": "garment_type",
+      "values": [
+        "BLOUSE",
+        "SHIRT_BLOUSE",
+        "BLAZER",
+        "COAT",
+        "LOAFERS"
+      ],
+      "points": 25,
+      "reason": "하객용 격식",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.wedding.casual",
+      "dimension": "tpo",
+      "selector": "WEDDING_GUEST",
+      "attribute": "garment_type",
+      "values": [
+        "HOODIE",
+        "SWEATSHIRT"
+      ],
+      "points": -25,
+      "reason": "스포츠형 상의 감점",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.travel.fit",
+      "dimension": "tpo",
+      "selector": "TRAVEL",
+      "attribute": "fit",
+      "values": [
+        "RELAXED",
+        "REGULAR"
+      ],
+      "points": 15,
+      "reason": "여행용 여유핏",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "tpo.travel.type",
+      "dimension": "tpo",
+      "selector": "TRAVEL",
+      "attribute": "garment_type",
+      "values": [
+        "PANTS",
+        "SNEAKERS",
+        "HOODIE",
+        "SWEATSHIRT"
+      ],
+      "points": 20,
+      "reason": "이동 중심 구성",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.minimal.pattern",
+      "dimension": "aesthetic",
+      "selector": "MINIMAL",
+      "attribute": "pattern",
+      "values": [
+        "SOLID"
+      ],
+      "points": 20,
+      "reason": "무지 중심",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.minimal.detail",
+      "dimension": "aesthetic",
+      "selector": "MINIMAL",
+      "attribute": "style",
+      "values": [
+        "BASIC",
+        "TAILORED"
+      ],
+      "points": 15,
+      "reason": "간결한 디자인",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.classic.type",
+      "dimension": "aesthetic",
+      "selector": "CLASSIC",
+      "attribute": "garment_type",
+      "values": [
+        "SHIRT",
+        "SHIRT_BLOUSE",
+        "KNIT",
+        "BLAZER",
+        "COAT",
+        "LOAFERS"
+      ],
+      "points": 20,
+      "reason": "클래식 품목",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.classic.pattern",
+      "dimension": "aesthetic",
+      "selector": "CLASSIC",
+      "attribute": "pattern",
+      "values": [
+        "STRIPE",
+        "CHECK"
+      ],
+      "points": 10,
+      "reason": "전통 패턴",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.feminine.detail",
+      "dimension": "aesthetic",
+      "selector": "FEMININE",
+      "attribute": "decoration",
+      "values": [
+        "LACE",
+        "RIBBON",
+        "FRILL",
+        "PLEATS"
+      ],
+      "points": 20,
+      "reason": "섬세한 장식",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.feminine.line",
+      "dimension": "aesthetic",
+      "selector": "FEMININE",
+      "attribute": "silhouette",
+      "values": [
+        "A_LINE",
+        "MERMAID"
+      ],
+      "points": 15,
+      "reason": "곡선형 라인",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.casual.type",
+      "dimension": "aesthetic",
+      "selector": "CASUAL",
+      "attribute": "garment_type",
+      "values": [
+        "LONG_SLEEVE_TEE",
+        "SHORT_SLEEVE_TEE",
+        "HOODIE",
+        "SWEATSHIRT",
+        "KNIT",
+        "SNEAKERS"
+      ],
+      "points": 20,
+      "reason": "캐주얼 기본 품목",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.casual.fit",
+      "dimension": "aesthetic",
+      "selector": "CASUAL",
+      "attribute": "fit",
+      "values": [
+        "RELAXED",
+        "REGULAR"
+      ],
+      "points": 10,
+      "reason": "자연스러운 실루엣",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.street.fit",
+      "dimension": "aesthetic",
+      "selector": "STREET",
+      "attribute": "fit",
+      "values": [
+        "OVERSIZED",
+        "RELAXED"
+      ],
+      "points": 15,
+      "reason": "스트리트 볼륨",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.street.pattern",
+      "dimension": "aesthetic",
+      "selector": "STREET",
+      "attribute": "pattern",
+      "values": [
+        "GRAPHIC"
+      ],
+      "points": 20,
+      "reason": "그래픽 강조",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.bohemian.style",
+      "dimension": "aesthetic",
+      "selector": "BOHEMIAN",
+      "attribute": "style",
+      "values": [
+        "BOHEMIAN",
+        "VINTAGE"
+      ],
+      "points": 20,
+      "reason": "보헤미안·빈티지 표현",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    },
+    {
+      "id": "style.bohemian.texture",
+      "dimension": "aesthetic",
+      "selector": "BOHEMIAN",
+      "attribute": "texture",
+      "values": [
+        "TEXTURED"
+      ],
+      "points": 10,
+      "reason": "드러나는 표면 질감",
+      "groups": [
+        "TOP",
+        "BOTTOM",
+        "SHOES",
+        "BAG",
+        "OUTER"
+      ],
+      "body_scope": "overall"
+    }
+  ]
+}
