@@ -5,7 +5,7 @@
 - 서비스: https://www.gomin.today
 - API / Swagger: https://api.gomin.today/docs
 - 저장소: https://github.com/Team-TOFI/Happy-ending
-- [제출 안내](docs/submission/README.md) · [팀원 역할](docs/submission/team-roles.md) · [외부 자원 활용](docs/submission/external-resources.md)
+- [팀원 역할](docs/submission/team-roles.md) · [외부 자원 활용](docs/submission/external-resources.md)
 
 ## 구현 범위
 
@@ -146,7 +146,7 @@ backend/app/       API, 원문 정제, AI 흐름, 검증, 회원·옷장
 tools/scraping/    플랫폼 수집 어댑터와 재개 가능한 배치
 tools/database/    로컬 Supabase 시작 및 카탈로그 이관
 supabase/          설정과 원격·로컬 공통 SQL 마이그레이션
-docs/submission/   제출 점검, 역할·외부 자원 내역
+docs/submission/   역할·외부 자원 내역
 ```
 
 [AI 흐름](docs/ai-recommendations.md) · [DB ERD](docs/database-erd.md) · [백엔드](backend/README.md) · [프론트](frontend/README.md) · [비교용 규칙 정책](docs/recommendation-policy.md)
