@@ -1,5 +1,7 @@
 """Interpret, filter, select, then verify every returned ID and cited attribute."""
 
+import logging
+
 from app.catalog.schemas import GROUPS
 from app.recommendation.policy import load_policy
 
@@ -7,6 +9,8 @@ from .candidates import compact, effective_conditions, prepare_candidates, requi
 from .client import AIInvalidResponse
 from .schemas import AIResponse, Plan, Selection
 from .validation import validate_selection
+
+logger = logging.getLogger(__name__)
 
 
 def knowledge():
@@ -88,10 +92,12 @@ def empty_result(client, request, plan, excluded, omitted, warnings):
     )
 
 
-def recommend_with_ai(products, request, client, warnings=None):
+def recommend_with_ai(
+    products, request, client, warnings=None, *, selection_context=None, additional_conditions=()
+):
     # Do not spend an external call if server-owned constraints already rule out all products.
     required_groups = required_groups_for(products, request)
-    initial = Plan()
+    initial = Plan(conditions=list(additional_conditions))
     possible, excluded, omitted = prepare_candidates(products, request, initial)
     if not possible or required_groups - {p.service_category for p in possible}:
         initial = Plan(conditions=effective_conditions(request, initial))
@@ -113,6 +119,8 @@ def recommend_with_ai(products, request, client, warnings=None):
         "supported_groups": GROUPS,
         "attribute_values": info["attribute_values"],
     }
+    if selection_context:
+        interpret_payload["selection_context"] = selection_context
     for attempt in range(2):
         try:
             plan = client.generate("interpret", interpret_payload, Plan)
@@ -121,6 +129,7 @@ def recommend_with_ai(products, request, client, warnings=None):
             if attempt:
                 raise
             interpret_payload = dict(interpret_payload, validation_error=str(error))
+    plan = plan.model_copy(update={"conditions": [*additional_conditions, *plan.conditions]})
     if plan.questions:
         return AIResponse(
             model=client.model,
@@ -143,6 +152,12 @@ def recommend_with_ai(products, request, client, warnings=None):
     }
     if not candidates or required_groups - {p.service_category for p in candidates}:
         return empty_result(client, request, interpreted, excluded, omitted, warnings)
+    if selection_context:
+        # Retained items must still pass every current condition; never blindly inject IDs.
+        eligible, _, _ = prepare_candidates(products, request, plan, per_group=len(products))
+        previous_ids = {p["id"] for p in selection_context["previous_products"]}
+        present_ids = {p.id for p in candidates}
+        candidates += [p for p in eligible if p.id in previous_ids and p.id not in present_ids]
     available_groups = {p.service_category for p in candidates}
     selection_payload = {
         "user": user,
@@ -153,6 +168,15 @@ def recommend_with_ai(products, request, client, warnings=None):
         "candidates": [compact(p) for p in candidates],
         **info,
     }
+    if selection_context:
+        candidate_ids = {p.id for p in candidates}
+        selection_payload["selection_context"] = {
+            **selection_context,
+            "previous_products": [
+                dict(p, candidate_available=p["id"] in candidate_ids)
+                for p in selection_context["previous_products"]
+            ],
+        }
     for attempt in range(2):
         selection = None
         try:
@@ -164,8 +188,18 @@ def recommend_with_ai(products, request, client, warnings=None):
             outfits, pending = validate_selection(
                 candidates, request, selection, required_groups=required_groups
             )
+            if selection_context:
+                fixed = set(selection_context["fixed_product_ids"])
+                previous_ids = {p["id"] for p in selection_context["previous_products"]}
+                for outfit in outfits:
+                    chosen = {p.id for p in outfit.items}
+                    if not fixed <= chosen or chosen == previous_ids:
+                        raise AIInvalidResponse(
+                            "수정 대상 외 상품은 유지하고 요청한 코디를 변경하세요"
+                        )
             break
         except AIInvalidResponse as error:
+            logger.warning("AI selection validation failed (attempt %s): %s", attempt + 1, error)
             if attempt:
                 raise
             selection_payload = dict(selection_payload, validation_error=str(error))

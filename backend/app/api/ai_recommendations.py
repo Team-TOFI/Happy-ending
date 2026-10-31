@@ -10,6 +10,8 @@ from app.ai.config import AISettings
 from app.ai.schemas import AIRequest, AIResponse
 from app.ai.service import recommend_with_ai
 from app.catalog.repository import load_catalog
+from app.tofi.schemas import TofiRequest, TofiResponse
+from app.tofi.service import recommend_for_frontend
 
 from .recommendations import get_connection
 
@@ -27,7 +29,7 @@ def get_ai_client():
 
 @router.post(
     "",
-    response_model=AIResponse,
+    response_model=TofiResponse | AIResponse,
     summary="AI 코디 추천",
     description=(
         "자유롭게 입력한 상황·추구미와 사용자 정보를 AI가 해석하고 실제 DB 후보에서 코디를 선택합니다. "
@@ -41,9 +43,25 @@ def get_ai_client():
 )
 def ai_recommendations(
     request: Annotated[
-        AIRequest,
+        TofiRequest | AIRequest,
         Body(
             openapi_examples={
+                "frontend": {
+                    "summary": "TOFI 프론트 요청",
+                    "value": {
+                        "profile": {
+                            "mode": "mix",
+                            "upper": "웨이브",
+                            "lower": "스트레이트",
+                            "group": "여성",
+                            "occasion": "외출",
+                            "mood": "미니멀",
+                            "tags": ["차분한 색감"],
+                        },
+                        "refinement": None,
+                        "previousOutfit": None,
+                    },
+                },
                 "daily": {
                     "summary": "일상 추천",
                     "value": {
@@ -84,7 +102,11 @@ def ai_recommendations(
     products, stats = load_catalog(connection)
     warnings = ["일부 상품 정보가 갱신 대기 중입니다"] if stats["stale"] or stats["missing"] else []
     try:
+        if isinstance(request, TofiRequest):
+            return recommend_for_frontend(products, request, client, warnings)
         return recommend_with_ai(products, request, client, warnings)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
     except AIUnavailable as error:
         raise HTTPException(
             status_code=502, detail="AI 서비스 호출에 실패했습니다. 잠시 후 다시 시도하세요."

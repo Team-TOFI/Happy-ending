@@ -23,6 +23,7 @@ export interface Product {
   imageUrl: string | null;
   url: string | null;
   sample: boolean;
+  garmentType?: "PANTS" | "SKIRT" | null;
 }
 
 export interface Outfit {

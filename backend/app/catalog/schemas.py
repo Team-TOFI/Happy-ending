@@ -105,6 +105,7 @@ class CatalogItem(Contract):
     external_id: str
     name: str
     brand: str | None = None
+    gender_raw: str | None = None
     price_text: str | None = None
     product_url: str
     service_category: ServiceCategory

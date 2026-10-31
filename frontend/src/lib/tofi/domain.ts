@@ -107,6 +107,9 @@ export function normalizeProduct(value: unknown): Product | null {
     price: Math.round(p.price),
     sprite,
     sample,
+    ...(p.garmentType === "PANTS" || p.garmentType === "SKIRT"
+      ? { garmentType: p.garmentType }
+      : {}),
     imageUrl: safeUrl(p.imageUrl),
     url: sample ? null : safeUrl(p.url),
   };

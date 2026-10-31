@@ -1,0 +1,1 @@
+"""TOFI frontend contract adapter."""

@@ -10,7 +10,7 @@ from app.analysis.extractor import EXTRACTOR_VERSION, source_fingerprint
 
 from .schemas import AnalysisResult, Attribute, CatalogItem
 
-SOURCE_COLUMNS = "p.id,p.platform_code,p.external_id,p.product_url,p.name,p.brand,p.price_text,p.category_code,p.category_path,p.notice,p.raw_snapshot->'material_info' AS material_info"
+SOURCE_COLUMNS = "p.id,p.platform_code,p.external_id,p.product_url,p.name,p.brand,p.gender_raw,p.price_text,p.category_code,p.category_path,p.notice,p.raw_snapshot->'material_info' AS material_info"
 
 
 def read_sources(connection: Connection) -> list[dict]:
@@ -101,6 +101,7 @@ def load_catalog(connection: Connection) -> tuple[list[CatalogItem], dict[str, i
                     external_id=row["external_id"],
                     name=row["name"],
                     brand=row["brand"],
+                    gender_raw=row["gender_raw"],
                     price_text=row["price_text"],
                     product_url=row["product_url"],
                     category_code=row["category_code"],

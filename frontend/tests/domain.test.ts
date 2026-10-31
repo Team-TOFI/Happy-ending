@@ -151,3 +151,9 @@ test("JSON null profile and null saved context never prevent startup", () => {
   for (const input of [null, false, 42, "broken", []])
     assert.deepEqual(normalizeProfile(input), normalizeProfile({}));
 });
+
+test("real product garment type survives normalization without changing its ID", () => {
+  const result = normalizeRecommendations({ outfits: [{ id: "real-outfit", name: "코디", comment: "", products: [{ id: "musinsa:7", name: "미디 스커트", category: "하의", price: 39000, sample: false, garmentType: "SKIRT" }] }] });
+  assert.equal(result[0].products[0].id, "musinsa:7");
+  assert.equal((result[0].products[0] as { garmentType?: string }).garmentType, "SKIRT");
+});
