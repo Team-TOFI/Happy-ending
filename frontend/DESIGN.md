@@ -142,7 +142,7 @@ The palette is warm and light; darker browns carry readable text and actions.
 
 ### Primary
 
-- **Toffee** (`toffee`): the wordmark dot and active navigation underline.
+- **Toffee** (`toffee`): the active navigation underline. The supplied logo artwork carries its own warm beige mannequin-i dot.
 - **Light Toffee** (`toffee-light`): the welcome region, selected mode, completed step markers, saved button, and first recommendation header.
 - **Action Brown** (`action`): primary buttons, interactive text, selected checkmarks, caret, and keyboard focus outline. **Deep Action Brown** (`action-hover`) darkens an enabled primary button on hover.
 
@@ -170,7 +170,7 @@ The default root size is the body role. Headings balance their lines; Korean par
 - **Title:** summary-panel headings use `title`. Outfit headings use `outfit-title`, with size adjustments for the result-card layout. Supporting section headings commonly use (20–24px) at weight (600).
 - **Body:** `body` supplies the base reading rhythm. Page descriptions use (17px) and line height (1.8) on desktop; component copy commonly uses (13–15px) and line height (1.8–1.9).
 - **Label:** buttons use `label`. Navigation uses (15px) at regular weight and (600) for the current page. Compact product captions, sample disclosures, and notes use smaller source-specific sizes rather than a new typeface.
-- **Wordmark:** the text wordmark is (44px), weight (500), line height (1), tracking (-0.04em); it becomes (36px) on small screens.
+- **Wordmark:** use the supplied transparent v2 artwork with its lowercase t and beige mannequin-i dot. Header image width is 144px, or 116px on small screens; footer width is 84px, or 72px on small screens. Preserve its intrinsic aspect ratio and alpha; do not recreate it as text or add a CSS dot.
 
 **The Single Family Rule.** Preserve the same native sans stack across headings, controls, and body copy; express hierarchy with the established sizes and weights.
 

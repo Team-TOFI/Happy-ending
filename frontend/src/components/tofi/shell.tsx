@@ -1,11 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, type ReactNode } from "react";
 import { bodyComplete } from "@/lib/tofi/domain";
 import { actions, recommendationService } from "@/lib/tofi/store";
 import { useTofi } from "@/lib/tofi/use-tofi";
+
+function BrandLogo({ compact = false }: { compact?: boolean }) {
+  return (
+    <Image
+      className="brand-logo"
+      src="/brand/tofi-logo-v2.png"
+      alt="tofi"
+      width={1945}
+      height={809}
+      sizes={compact ? "84px" : "(max-width: 540px) 116px, 144px"}
+      priority={!compact}
+    />
+  );
+}
 
 export function TofiShell({ children }: { children: ReactNode }) {
   const state = useTofi();
@@ -31,8 +46,7 @@ export function TofiShell({ children }: { children: ReactNode }) {
       <header className="site-header">
         <div className="header-inner">
           <Link href="/" className="wordmark" aria-label="tofi 홈">
-            tofi
-            <span className="logo-dot" />
+            <BrandLogo />
           </Link>
           <nav aria-label="주 메뉴">
             <Link
@@ -69,8 +83,8 @@ export function TofiShell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <footer className="site-footer container">
-        <Link className="footer-brand" href="/">
-          tofi
+        <Link className="footer-brand" href="/" aria-label="tofi 홈">
+          <BrandLogo compact />
         </Link>
         <p>
           {recommendationService.sample
