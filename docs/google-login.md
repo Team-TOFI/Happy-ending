@@ -2,8 +2,6 @@
 
 Google 한 가지 방식으로 가입·로그인한다. 첫 로그인 때 Supabase Auth 계정이 생성되고, `/auth/me`가 검증한 Google 사용자 ID로 앱 회원을 만든다.
 
-참고: https://github.com/gomin-diary/gomin/blob/main/docs/engineering/google-oauth-flow.md
-
 참조 프로젝트는 FastAPI가 OAuth 요청·PKCE·nonce·자체 세션을 관리한다. 여기서는 이미 사용하는 Supabase Auth가 인증을 맡고, Next.js SSR/PKCE 콜백과 FastAPI의 사용자 검증·소유자별 SQL을 연결했다.
 
 - `GET /auth/me`: 검증된 Google 회원. 임의 user_id나 user_metadata의 공급자 주장은 신뢰하지 않는다.

@@ -14,22 +14,10 @@
 | 외부 API | Supabase Auth / Google OAuth | Google 로그인·세션 확인 | 각 서비스 이용약관 |
 | 외부 서비스 | Vercel / Render / Cloudflare / GitHub | 프론트·API 배포·DNS·소스/CI | 각 서비스 이용약관 |
 | 사전 보유 코드 | 발표본에는 '해당 없음' 기재 | 개회식 이전 팀 보유·작성 코드 여부는 팀 확인 필요 | 해당 여부 확인 후 최종 확정 |
-| 기타 | `gomin-diary/gomin`의 Google OAuth 설계 문서·Supabase migration workflow | 인증 설계 참고·CI 설정 변형 | 저장소 API에서 라이선스 표시 없음. 이용 권한 별도 확인 |
 | 기타 | OpenAI Codex / ImageGen | 개발 보조, 시연 이미지·브랜드 자산 제작 | 상용 서비스 이용약관 |
 | 기타 | 무신사 상품 정보·이미지 | 수집 대상·원본 이미지 URL 표시 | 원출처 권리·이용 조건. 재배포 허가를 의미하지 않음 |
 | 기타 | 팀 제공 체형 참고 자료 | 스타일링 지침 정리 | 제공 자료의 권리·이용 조건 |
 | 기타 | Noto Sans KR | 첨부 발표자료 서체 | SIL Open Font License 1.1 |
-
-## 발표본에 추가할 출처
-
-현재 `.github/workflows/supabase-migrations-check.yml`, `supabase-migrations-production.yml` 상단에는 원본 참고 경로가 명시되어 있습니다. 첨부 발표본 외부 자원 표에도 위 `gomin-diary/gomin` 행을 넣어 문서와 구현 이력을 일치시켜야 합니다. 단순히 사전 보유 코드 '해당 없음'만 유지한 채 외부 참고 이력을 생략하지 않습니다.
-
-- 원본 저장소: https://github.com/gomin-diary/gomin
-- 참고 파일: `docs/engineering/google-oauth-flow.md`, `.github/workflows/supabase-migrations-check.yml`, `.github/workflows/supabase-migrations-production.yml`
-- 적용 범위: 인증 책임 분리 설계 참고, CLI 버전 고정, 루트 npm 의존 제거, 검증/수동 원격 적용 흐름으로 조정
-- GitHub 저장소 메타데이터에서 `license=null` 확인일: 2026-11-01. 공개 저장소라는 사실만으로 특정 사용 허가를 단정하지 않음.
-
-위 이력은 인증 설계 참고와 CI 설정 변형에 관한 것입니다. 고민일기의 대화·일기 서비스를 TOFI 기능으로 사용했다는 뜻은 아닙니다. 사전 보유 코드 분류 해당 여부는 실제 작성·보유 시점과 권리 관계를 아는 팀이 확정해야 합니다.
 
 ## 구현 범위의 구분
 

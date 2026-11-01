@@ -1,4 +1,3 @@
-# Adapted from gomin-diary/gomin/.github/workflows/supabase-migrations-check.yml
 name: Supabase migration check
 
 on:

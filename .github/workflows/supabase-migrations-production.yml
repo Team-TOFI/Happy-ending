@@ -1,4 +1,3 @@
-# Adapted from gomin-diary/gomin/.github/workflows/supabase-migrations-production.yml
 name: Supabase production migrations
 
 on:
